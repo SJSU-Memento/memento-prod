@@ -1,0 +1,7 @@
+.env
+
+data
+elasticsearch-data
+caddy-data
+caddy-config
+fs

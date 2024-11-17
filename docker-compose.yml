@@ -1,0 +1,48 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./fs:/fs
+    env_file:
+      - .env
+    environment:
+        - PYTHONUNBUFFERED=1
+        - STORAGE_PATH=/fs/storage
+        - DATABASE_URL=http://elasticsearch:9200
+        - DATABASE_INDEX=images
+  elasticsearch:
+    image: elasticsearch:8.8.0
+    ports:
+      - 127.0.0.1:9200:9200
+      - 127.0.0.1:9300:9300
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - ./elasticsearch-data:/usr/share/elasticsearch/data
+  caddy-fileserver:
+    image: caddy:2.7.6-alpine
+    command: caddy file-server --listen 0.0.0.0:9898 --root /srv/www
+    volumes:
+      - ./fs:/srv/www
+    restart: unless-stopped
+  caddy:
+    image: caddy:2.7.6-alpine
+    ports:
+      - 0.0.0.0:80:9999
+    volumes:
+      - ./backend/Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy-data:/data
+      - ./caddy-config:/config
+    environment:
+      - FILESERVER_HOST=caddy-fileserver:9898
+      - FRONTEND_HOST=frontend:80
+      - BACKEND_HOST=backend:80
