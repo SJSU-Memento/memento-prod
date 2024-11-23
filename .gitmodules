@@ -4,3 +4,6 @@
 [submodule "backend"]
 	path = backend
 	url = git@github.com:SJSU-Memento/backend.git
+[submodule "firmware"]
+	path = firmware
+	url = git@github.com:SJSU-Memento/firmware.git

@@ -14,3 +14,7 @@ Then run the following command:
 ```bash
 docker compose up -d
 ```
+
+## Firmware
+
+To setup the firmware, follow the instructions in the [firmware README](firmware/README.md).
